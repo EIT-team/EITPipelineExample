@@ -121,8 +121,8 @@ mat_ref_idx(dist_tetra<pert_rad)=2;
 
 % create new conductivity vector
 mat_ref_pert=M.mat_ref;
-mat_ref(mat_ref_idx==1) = 0.35;
-mat_ref(mat_ref_idx==2) = pert_cond;
+mat_ref_pert(mat_ref_idx==1) = 0.35;
+mat_ref_pert(mat_ref_idx==2) = pert_cond;
 
 %make mesh for display purposes
 Mpert=M;
