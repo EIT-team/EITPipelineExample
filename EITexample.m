@@ -169,7 +169,7 @@ n=3e-6*randn(500,length(dV)); % estimate of the noise in the measurments, we don
 lambda = logspace(-20,-1,200); % the range of regularisation parameters to try
 
 % reconstruct image
-[Sigma,X]=eit_recon_tik0(dV,J_hex,'output/EITrec',n,U,S,V,lambda);
+[Sigma,X,sv_i]=eit_recon_tik0(dV,J_hex,'output/EITrec',n,U,S,V,lambda);
 
 %write vtk files to view in paraview
 writeVTKcell_hex('output/EITrec_Tik0',Mesh_hex.Hex,Mesh_hex.Nodes,X); % no noise based correction
@@ -178,8 +178,44 @@ writeVTKcell_hex('output/EITrec_Tik0_correction',Mesh_hex.Hex,Mesh_hex.Nodes,Sig
 % NOTE THE MESH SIZES AND PARAMETERS CHOSEN ARE FOR DEMONSTRATION PURPOSES
 % ONLY!
 
+%% doing it without cv
 
 
+X2=V*(diag(1./sv_i)*U'*dV');
+
+UtNoise = U'*n';
+
+SD2 = std(V*(diag(1./sv_i)*UtNoise),0,2);
+
+
+Sigma2=X2./SD2;
+
+writeVTKcell_hex('output/EITrec_Tik0_2',Mesh_hex.Hex,Mesh_hex.Nodes,X2); % no noise based correction
+writeVTKcell_hex('output/EITrec_Tik0_correction_2',Mesh_hex.Hex,Mesh_hex.Nodes,Sigma2); % with correction added
+%%
+X3lhs=V*(diag(1./sv_i)*U');
+
+X3=X3lhs*dV';
+
+Sigma3=(X3lhs*dV')./SD2;
+Sigma4=(X3lhs./SD2)*dV';
+
+SigLhs=(X3lhs./SD2);
+tic
+Sigmafast=SigLhs*dV';
+toc
+%% get slice
+
+    cnts=zeros(length(Mesh_hex.Hex),3);
+    for i=1:8
+        cnts=cnts+Mesh_hex.Nodes(Mesh_hex.Hex(:,i),:)/8;
+    end
+    
+    %convert centers to xyz sub - not sure how to plot incomplete slices in
+    %labview
+    
+    
+    
 
 
 
