@@ -55,7 +55,7 @@ runmesher('resources/NNscalp.inr','resources/NNscalp_elecINRpos.txt',...
 % save mesh as matlab format for future use once this is done you do not
 % need to run the mesher again unless you change geometry or electrode
 % locations (only if you have refined at the electrode sites)
-
+%%
 M=loadmesh('output/NNexample');
 %DisplayBoundaries(M)
 
@@ -69,7 +69,7 @@ cond_back=0.35; %background conductivity
 
 %create conductivity vector - currently it is all set to 1 to identify the
 %tissue number
-mat_ref=M.mat_ref;
+mat_ref=zeros(size(M.mat_ref));
 mat_ref(M.mat_ref==1) = cond_back;
 % mat_ref(M.mat_ref==2) = 0.5; %for example if you had a second tissue and
 % you wanted to specify a differerent conductivity to it
@@ -120,7 +120,7 @@ mat_ref_idx=M.mat_ref;
 mat_ref_idx(dist_tetra<pert_rad)=2;
 
 % create new conductivity vector
-mat_ref_pert=M.mat_ref;
+mat_ref_pert=zeros(size(M.mat_ref));
 mat_ref_pert(mat_ref_idx==1) = 0.35;
 mat_ref_pert(mat_ref_idx==2) = pert_cond;
 
@@ -147,7 +147,8 @@ title('Perturbation location');
 % re run forward with this new conducivity vector
 Solp=Sol;
 Solp.ref=mat_ref_pert;
-figure
+
+
 [Meshp,Femp,Fwdp,Invp,Solp] = supersolver_setup(Mesh,Fem,Fwd,Inv,Solp);
 % run fwd
 [Meshp,Femp,Fwdp,Invp,Solp,Datap] = supersolver_runfwd(Meshp,Femp,Fwdp,Invp,Solp);
@@ -158,9 +159,6 @@ figure
 %% Create difference voltages and inverse jacobian 
 
 dV=(Datap.bnd_v-Data.bnd_v)'; % this is the data you would get from the EIT system, it needs to look like this
-
-
-
 
 %% Make Image
 
